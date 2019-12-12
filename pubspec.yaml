@@ -9,7 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_android_lifecycle: ^1.0.0
+  flutter_android_lifecycle:
+    git:
+      url: git@github.com:viniciuszani/flutter-android-lifecycle-plugin.git
+      ref: sdk-version
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

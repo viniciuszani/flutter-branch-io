@@ -4,7 +4,9 @@ import android.content.Intent
 import android.util.Log
 import com.anggach.flutterbranchioplugin.DEBUG_NAME
 import com.anggach.flutterbranchioplugin.INTENT_EXTRA_DATA
+
 import io.branch.referral.Branch
+import io.branch.referral.Branch.BranchReferralInitListener
 import io.branch.referral.BranchError
 import io.branch.referral.BranchUtil
 import io.flutter.plugin.common.PluginRegistry
@@ -28,17 +30,24 @@ fun init(registrar: PluginRegistry.Registrar) {
 
 fun setUpBranchIo(registrar: PluginRegistry.Registrar, deepLinkStreamHandler: DeepLinkStreamHandler?, result: Result) {
     init(registrar)
-    Branch.getInstance().initSession({ referringParams: JSONObject?, error: BranchError? ->
-        Log.d(DEBUG_NAME, "BRANCH CALLBACK")
-        if (error == null) {
-            result.success("BRANCH IO INITIALIZED")
-            val params = referringParams?.toString()
-            val intent = Intent()
-            intent.putExtra(INTENT_EXTRA_DATA, params)
-            deepLinkStreamHandler!!.handleIntent(registrar.activity(), intent)
-        } else {
-            result.error("1", "BRANCH IO INITIALIZATION ERROR ${error.message}", null)
+
+    // Branch init
+    Branch.getInstance().initSession(object : BranchReferralInitListener {
+        override fun onInitFinished(referringParams: JSONObject, error: BranchError?) {
+            Log.d(DEBUG_NAME, "BRANCH CALLBACK")
+            if (error == null) {
+                result.success("BRANCH IO INITIALIZED")
+                Log.e("BRANCH SDK", referringParams.toString())
+                val intent = Intent()
+                // Retrieve deeplink keys from 'referringParams' and evaluate the values to determine where to route the user
+                val params = referringParams?.toString()
+                intent.putExtra(INTENT_EXTRA_DATA, params)
+                deepLinkStreamHandler!!.handleIntent(registrar.activity(), intent)
+                // Check '+clicked_branch_link' before deciding whether to use your Branch routing logic
+            } else {
+                Log.e("BRANCH SDK", error.message)
+                result.error("1", "BRANCH IO INITIALIZATION ERROR ${error.message}", null)
+            }
         }
     }, registrar.activity().intent.data, registrar.activity())
-
 }
