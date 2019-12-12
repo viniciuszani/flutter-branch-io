@@ -60,16 +60,16 @@ public class SwiftFlutterBranchIoPlugin: FlutterPluginAppLifeCycleDelegate, Flut
 
         let lp: BranchLinkProperties = BranchLinkProperties()
         if lpChannel != nil {
-            lp.channel = lpChannel as String
+            lp.channel = lpChannel as! String
         }
         if lpFeature != nil {
-            lp.feature = lpFeature as String
+            lp.feature = lpFeature as! String
         }
         if lpCampaign != nil {
-            lp.campaign = lpCampaign as String
+            lp.campaign = lpCampaign as! String
         }
         if lpStage != nil {
-            lp.stage = lpStage as String
+            lp.stage = lpStage as! String
         }
         if lpParams != nil {
             for param in lpParams!! {
@@ -108,7 +108,7 @@ public class SwiftFlutterBranchIoPlugin: FlutterPluginAppLifeCycleDelegate, Flut
     }
 
     private func getLatestParam(call _: FlutterMethodCall, result: @escaping FlutterResult) {
-        let latestParams = Branch.getInstance()?.getLatestReferringParams()
+        let latestParams = Branch.getInstance().getLatestReferringParams()
         result(latestParams)
     }
 
